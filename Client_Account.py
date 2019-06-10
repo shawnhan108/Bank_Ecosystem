@@ -10,7 +10,7 @@ managing multiple accounts as a client. These include:
 
 from Bank_Account import Bank_Class
 
-class User_Class(Bank_Class):
+class Client_Class(Bank_Class):
     """"
     An ABC client holds mutiple client accounts. A client must have the 
     following properties:
@@ -24,7 +24,6 @@ class User_Class(Bank_Class):
     """
     
     __accounts = dict()
-    
     
     def __deposit__(self, amount=0.0, source="", date=""):
         """

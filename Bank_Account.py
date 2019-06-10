@@ -1,11 +1,11 @@
 """
 Bank Account Class
-A bank class consists of a dictionary of client user accounts. This class has 
+A bank class consists of a dictionary of client client accounts. This class has 
 the basic functionality for an account. These includes:
     Creating Accounts
     Destroying Accounts
     Modifying Accounts:
-        Printing Account User Balances (Debit/Credit)
+        Printing Account Client Balances (Debit/Credit)
 """
 
 class Bank_Class():
@@ -15,28 +15,32 @@ class Bank_Class():
         
         
     Attributes:
-        Bank Number: An integer representing the bank's identity.
-        Bank Account Name: A string representing the bank's name.
-        Bank Balance: A float maintaining the bank's book balance.
-    """
-    __users = dict()
+        Account Number: An integer representing the client's's identity.
+        Account Account Name: A string representing the client's name.
+        Account Balance: A float maintaining the client's book balance.
+        Account Type: A string representing the type of client account, either
+                      bank, client, chequing, savings, or credit account.
+    """ 
+    __clients = dict()
         
         
-    def __init__(self, number, name="Bank 1", balance=0.0):
+    def __init__(self, number=0, name="Bank 1", balance=0.0, 
+                 account_type = ""):
         """
-        __init__(self, number, name, balance): return a bank object whose 
-                                               identity number is *number*, name
-                                               is *name* and starting balance is
-                                               *balance*.
-        Side Effects: Creates a bank account instance.
+        __init__(self, number, name, balance, account_type): return a basic 
+            account object whose identity number is *number*, name is *name*, 
+            starting balance is *balance* and account type is *sccount_type*.
+        Side Effects: Creates a client account instance.
                       Prints to I/O
         Time: O(1)
         """
+        
         self.number = number
         self.name = name
-        self.balance = balance
+        self.balance = balance 
+        self.account_type = account_type
         
-        print("Bank Class Successfully Created")        
+        print("Class Successfully Created")       
         
         
     def __destory__(self):
@@ -50,8 +54,7 @@ class Bank_Class():
         self.name = ""
         self.balance = 0.0
         print("Deleted")
-    
-    
+        
     def __print_accounts__(self):
         """
         __print_accounts__(self): recursively prints all accounts number, name 
@@ -59,9 +62,4 @@ class Bank_Class():
         Side Effects: Prints to I/O
         Time: O(n)
         """
-        pass
-        
-    
-    
-        
-        
+        pass        
