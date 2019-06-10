@@ -1,4 +1,4 @@
-from Account_individual import Account
+from Account_individual import Individual_Account
 
 
 # class DB makes each DB an object, and provides functions for all account's DB, inherits all account attributes.

@@ -1,35 +1,34 @@
 """
 Individual Accounts
-Each account should :
+Each individual account (I.A.) should:
+    Create I.A. DB Table:
+        Initalize I.A. DB Table
+        Link Individual Account DB Table with User's DB Table
+        Link Individual Account DB Table with Bank's DB Table
+    Document Money Deposits into Individual Account in Inv
+    Document Money Withdrawls from Individual Account
+    
+    
+    
+    
+    
     Be linked with its own database table and the Bank’s table
         When individual accounts are created, their own table is created.
         When individual accounts’ amount is modified, the Bank’s table and its own table will be updated.
     Provide essential account information to user
         Transactions history in the past week/month/quarter
         Total amounts
-        Consumption expenditure statistics (%change/month, expenditure categories change, most popular categories,
-            average transaction per day, etc) - mostly SQL functions, for monthly report?
-    Account activities
-        Transfer between accounts
-        Deposit/withdrawal
 """
+from User_Account import Account
 
-
-#   class Account provides all functions to an account object and their database as attributes.
-class Account:
-
-    # Initializer/Instance Attributes for account objects
-    # one_account(account_num, parent_cat) produces an account object with its own account ID,account name,own DB table,
-    #       account_balance (0). The account_num is a newly assigned n-digit integer, and parent_cat is the general
-    #       category of the account (personal/corporal/family...)
-    # one_account(account_num, parent_cat): int str -> Account
-    def _init_(self, account_num, parent_cat):
-        pass
-
+# class Account_Indiviual provides all functions to a specific account 
+#     object and their database as attributes.
+class Account_Individual():    
+    
     # deposit (amount, source) consumes deposit amount and deposit description,
     #       and updates its account_balance and DB attributes.
-    # deposit(amount, source): (ID, name, DB, account_bal), int, str -> (ID, name, DB', account_bal')
-    # update record in DB: date, description, category, deposit_amount, balance.
+    # DB: date, description, category, deposit_amount, balance.
+    # Time: O(1)
     def deposit(self, amount, source):
         pass
 
@@ -66,9 +65,16 @@ class Account:
     def verify_amount(self, amount):
         pass
 
+
+
+
+
+    # create DB and link to parent
+    
+    # updates its account_balance and DB attributes --> Deposit
+    
     # report_generate(length) generates an account's summary for the specified duration, using the DB function
     #       DB_report_generate.
     # report_generate(length): (ID, name, DB, account_bal), length -> PDF/docx etc.
     def report_generate(self, length):
-        pass
-
+        pass    
