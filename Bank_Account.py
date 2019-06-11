@@ -62,4 +62,11 @@ class Bank_Class():
         Side Effects: Prints to I/O
         Time: O(n)
         """
-        pass        
+        account_nums = __clients.keys()
+        
+        for i in account_nums:
+            print("Account Number: ", i, "Account Name: ", __clients[i].name, "Account Type: ", __clients[i].account_type)
+            print("Account Balance: ", __clients[i].balance, "\n")
+    
+        
+        
