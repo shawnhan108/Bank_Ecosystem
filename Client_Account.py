@@ -1,3 +1,5 @@
+import mysql.connector
+
 """
 Client Account Class:
 A client account class consists of a dictionary of individual chequing, savings 
@@ -9,6 +11,7 @@ managing multiple accounts as a client. These include:
 """
 
 from Bank_Account import Bank_Class
+
 
 class Client_Class(Bank_Class):
     """"
@@ -22,9 +25,9 @@ class Client_Class(Bank_Class):
         Client Type: A string representing the type of client account, either
                    chequing, savings, or credit account.
     """
-    
+
     __accounts = dict()
-    
+
     def __deposit__(self, amount=0.0, source="", date=""):
         """
         __deposit(self, amount, source, date): consumes an amount, date, deposit
@@ -33,7 +36,9 @@ class Client_Class(Bank_Class):
         Side Effect: Print to I/O (asks for destination)
         Time: O(1)
         """
-        pass    
+        self.balance += amount
+        print("Successful Deposit to Account Number {0} on {1}, {2}".format(self.number, date, source))
+        print("Account Balance", self.balance)
 
     def __withdrawal__(self, amount=0.0, source="", date=""):
         """
@@ -43,4 +48,6 @@ class Client_Class(Bank_Class):
         Side EffectsL Print to I/O (asks for destination)
         Time: O(1)
         """
-        pass
+        self.balance -= amount
+        print("Successful Withdrawal from Account Number {0} on {1}, {2}".format(self.number, date, source))
+        print("Account Balance", self.balance)

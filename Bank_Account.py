@@ -8,6 +8,7 @@ the basic functionality for an account. These includes:
         Printing Account Client Balances (Debit/Credit)
 """
 
+
 class Bank_Class():
     """"
     An ABC Bank holds a customers bank account. A bank must have the 
@@ -20,12 +21,11 @@ class Bank_Class():
         Account Balance: A float maintaining the client's book balance.
         Account Type: A string representing the type of client account, either
                       bank, client, chequing, savings, or credit account.
-    """ 
+    """
     __clients = dict()
-        
-        
-    def __init__(self, number=0, name="Bank 1", balance=0.0, 
-                 account_type = ""):
+
+    def __init__(self, number=0, name="Bank 1", balance=0.0,
+                 account_type=""):
         """
         __init__(self, number, name, balance, account_type): return a basic 
             account object whose identity number is *number*, name is *name*, 
@@ -34,15 +34,15 @@ class Bank_Class():
                       Prints to I/O
         Time: O(1)
         """
-        
+
         self.number = number
         self.name = name
-        self.balance = balance 
+        self.balance = balance
         self.account_type = account_type
-        
-        print("Class Successfully Created")       
-        
-        
+
+
+        print("Class Successfully Created")
+
     def __destory__(self):
         """
         __destroy_(_self): destroys the instance of an entire bank class.
@@ -54,7 +54,7 @@ class Bank_Class():
         self.name = ""
         self.balance = 0.0
         print("Deleted")
-        
+
     def __print_accounts__(self):
         """
         __print_accounts__(self): recursively prints all accounts number, name 
@@ -63,10 +63,8 @@ class Bank_Class():
         Time: O(n)
         """
         account_nums = __clients.keys()
-        
+
         for i in account_nums:
-            print("Account Number: ", i, "Account Name: ", __clients[i].name, "Account Type: ", __clients[i].account_type)
+            print("Account Number: ", i, "Account Name: ", __clients[i].name, "Account Type: ",
+                  __clients[i].account_type)
             print("Account Balance: ", __clients[i].balance, "\n")
-    
-        
-        
