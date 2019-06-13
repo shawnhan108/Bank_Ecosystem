@@ -1,9 +1,9 @@
-from Account_individual import Individual_Account
-
-
 # class DB makes each DB an object, and provides functions for all account's DB, inherits all account attributes.
 # most functions use SQL functions
-class DB(Account):
+from Individual_Account import IndividualAccount
+
+
+class DB(IndividualAccount):
 
     # popular_cat() consumes an object, connect to DB, finds the category that appears the most,
     #       and returns the category.

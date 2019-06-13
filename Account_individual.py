@@ -21,10 +21,11 @@ Each individual account (I.A.) should:
 """
 from User_Account import Account
 
-# class Account_Indiviual provides all functions to a specific account 
+
+# class Account_Indiviual provides all functions to a specific account
 #     object and their database as attributes.
-class Account_Individual():    
-    
+class Account_Individual():
+
     # deposit (amount, source) consumes deposit amount and deposit description,
     #       and updates its account_balance and DB attributes.
     # DB: date, description, category, deposit_amount, balance.
@@ -65,16 +66,12 @@ class Account_Individual():
     def verify_amount(self, amount):
         pass
 
-
-
-
-
     # create DB and link to parent
-    
+
     # updates its account_balance and DB attributes --> Deposit
-    
+
     # report_generate(length) generates an account's summary for the specified duration, using the DB function
     #       DB_report_generate.
     # report_generate(length): (ID, name, DB, account_bal), length -> PDF/docx etc.
     def report_generate(self, length):
-        pass    
+        pass

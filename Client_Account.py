@@ -10,10 +10,10 @@ managing multiple accounts as a client. These include:
         Withdrawals
 """
 
-from Bank_Account import Bank_Class
+from Bank_Account import BankAccount
 
 
-class Client_Class(Bank_Class):
+class ClientAccount(BankAccount):
     """"
     An ABC client holds mutiple client accounts. A client must have the 
     following properties:
@@ -31,23 +31,59 @@ class Client_Class(Bank_Class):
     def __deposit__(self, amount=0.0, source="", date=""):
         """
         __deposit(self, amount, source, date): consumes an amount, date, deposit
-                                               description, and updates its 
-                                               balance.
+                                               description, updates its
+                                               balance, and logs in the account's history DB table.
         Side Effect: Print to I/O (asks for destination)
         Time: O(1)
         """
         self.balance += amount
+
+        # Connect to mySQL database
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="anshulshawn",
+            database="Bank_Ecosystem_DB"
+        )
+
+        # Record history
+        mycursor = mydb.cursor()
+        history_record = 'INSERT INTO {0} (Date, Transaction_Description, Deposits, Balance) VALUES ({1}, {2}, {3})'.format(
+            self.table, date, source, amount, self.balance)
+        mycursor.execute(history_record)
+        mydb.commit()
+
+        mycursor.close()
+
         print("Successful Deposit to Account Number {0} on {1}, {2}".format(self.number, date, source))
         print("Account Balance", self.balance)
 
     def __withdrawal__(self, amount=0.0, source="", date=""):
         """
         withdrawal(self, amount, source, date): consumes withdrawal amount, date
-                                                and withdrawl description, and 
-                                                updates its balance.
-        Side EffectsL Print to I/O (asks for destination)
+                                                and withdrawal description, updates its
+                                               balance, and logs in the account's history DB table.
+        Side Effects: Print to I/O (asks for destination)
         Time: O(1)
         """
         self.balance -= amount
+
+        # Connect to mySQL database
+        mydb = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            passwd="anshulshawn",
+            database="Bank_Ecosystem_DB"
+        )
+
+        # Record history
+        mycursor = mydb.cursor()
+        history_record = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Balance) VALUES ({1}, {2}, {3})'.format(
+            self.table, date, source, amount, self.balance)
+        mycursor.execute(history_record)
+        mydb.commit()
+
+        mycursor.close()
+
         print("Successful Withdrawal from Account Number {0} on {1}, {2}".format(self.number, date, source))
         print("Account Balance", self.balance)

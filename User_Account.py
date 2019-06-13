@@ -8,9 +8,10 @@ managing multiple accounts as a client. These include:
         Withdrawals
 """
 
-from Bank_Account import Bank_Class
+from Bank_Account import BankAccount
 
-class User_Class(Bank_Class):
+
+class User_Class(BankAccount):
     """"
     An ABC client holds mutiple client accounts. A client must have the 
     following properties:
@@ -22,10 +23,9 @@ class User_Class(Bank_Class):
         Client Type: A string representing the type of client account, either
                    chequing, savings, or credit account.
     """
-    
+
     __accounts = dict()
-    
-    
+
     def __deposit__(self, amount=0.0, source="", date=""):
         """
         __deposit(self, amount, source, date): consumes an amount, date, deposit
@@ -34,7 +34,7 @@ class User_Class(Bank_Class):
         Side Effect: Print to I/O (asks for destination)
         Time: O(1)
         """
-        pass    
+        pass
 
     def __withdrawal__(self, amount=0.0, source="", date=""):
         """

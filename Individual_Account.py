@@ -20,9 +20,10 @@ provides data anlytics for business insights and risk mitigation. These include:
         "Return on Equity" (Trending)
 """
 
-from Client_Account import Client_Class
+from Client_Account import ClientAccount
 
-class Individual_Class(User_Account):
+
+class IndividualAccount(ClientAccount):
     """"
     An ABC indivual account class represents a single client's account. An
     individual client must have the following properties:
@@ -34,45 +35,45 @@ class Individual_Class(User_Account):
         Account Type: A string representing the type of client account, either
                       bank, client, chequing, savings, or credit account.
     """
-        
-        
+
     def __history__(self, date_start="", date_stop=""):
         pass
-    
+
     def __deposit_track__(self, amount=0.0, source="", date=""):
         pass
-    
+
     def __withdrawal_track_(self, amount=0.0, source="", date=""):
         pass
-    
+
     def __most_active__(self, date_start="", date_stop=""):
         pass
+
     def __avg_trans__(self):
         pass
-    
+
     def __avg_trans_type__(self):
         pass
-    
+
     def __data_business__(self, date_start="", date_stop=""):
         pass
-    
+
     def __work_cap__(self):
         pass
-    
+
     def __work_cap_trend__(self):
         pass
-    
+
     def __curr_ratio__(self):
         pass
-    
+
     def __curr_ratio_trend__(self):
         pass
-    
+
     def __return_on_eq__(self):
         pass
-    
+
     def __return_on_eq_trend__(self):
         pass
-    
+
     def __data_risk_(self, date_start="", date_stop=""):
         pass
