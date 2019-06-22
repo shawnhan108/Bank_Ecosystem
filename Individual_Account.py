@@ -36,6 +36,7 @@ class IndividualAccount(ClientAccount):
                       bank, client, chequing, savings, or credit account.
     """
 
+
     def __history__(self, date_start="", date_stop=""):
         pass
 
@@ -47,6 +48,8 @@ class IndividualAccount(ClientAccount):
 
     def __most_active__(self, date_start="", date_stop=""):
         pass
+    
+    def __most_active__type(self, data_start="", date_stop=""):
 
     def __avg_trans__(self):
         pass

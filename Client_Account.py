@@ -36,6 +36,8 @@ class ClientAccount(BankAccount):
         Side Effect: Print to I/O (asks for destination)
         Time: O(1)
         """
+        
+        
         self.balance += amount
 
         # Connect to mySQL database
@@ -46,7 +48,7 @@ class ClientAccount(BankAccount):
             database="Bank_Ecosystem_DB"
         )
 
-        # Record history
+        # Record history -- add time.
         mycursor = mydb.cursor()
         history_record = 'INSERT INTO {0} (Date, Transaction_Description, Deposits, Balance) VALUES ({1}, {2}, {3})'.format(
             self.table, date, source, amount, self.balance)
@@ -55,6 +57,7 @@ class ClientAccount(BankAccount):
 
         mycursor.close()
 
+        # Print to I/O
         print("Successful Deposit to Account Number {0} on {1}, {2}".format(self.number, date, source))
         print("Account Balance", self.balance)
 
@@ -63,9 +66,11 @@ class ClientAccount(BankAccount):
         withdrawal(self, amount, source, date): consumes withdrawal amount, date
                                                 and withdrawal description, updates its
                                                balance, and logs in the account's history DB table.
-        Side Effects: Print to I/O (asks for destination)
+        Side Effects: Print to I/O
         Time: O(1)
         """
+        
+        ## if balance is negative, you can't withdraw money.
         self.balance -= amount
 
         # Connect to mySQL database
@@ -76,7 +81,7 @@ class ClientAccount(BankAccount):
             database="Bank_Ecosystem_DB"
         )
 
-        # Record history
+        # Record history -- add time.
         mycursor = mydb.cursor()
         history_record = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Balance) VALUES ({1}, {2}, {3})'.format(
             self.table, date, source, amount, self.balance)
@@ -84,6 +89,7 @@ class ClientAccount(BankAccount):
         mydb.commit()
 
         mycursor.close()
-
+        
+        # Print to I/O
         print("Successful Withdrawal from Account Number {0} on {1}, {2}".format(self.number, date, source))
         print("Account Balance", self.balance)
