@@ -36,6 +36,8 @@ class IndividualAccount(ClientAccount):
                       bank, client, chequing, savings, or credit account.
     """
 
+    def __transfer__(self, account_dep = "", account_withdraw = ""):
+        pass
 
     def __history__(self, date_start="", date_stop=""):
         pass

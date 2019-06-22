@@ -70,8 +70,12 @@ class ClientAccount(BankAccount):
         Time: O(1)
         """
         
-        ## if balance is negative, you can't withdraw money.
-        self.balance -= amount
+        self.balance -=amount
+        
+        # Check Account Balance to Determine if Transaction is Valid
+        if self.balance<0:
+            print("Insufficient Funds to Complete Transaction")
+            self.balance += amount
 
         # Connect to mySQL database
         mydb = mysql.connector.connect(

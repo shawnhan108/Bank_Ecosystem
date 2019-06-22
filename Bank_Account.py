@@ -97,6 +97,7 @@ class BankAccount:
         mycursor.close()
 
         ## Destroy the instance in the dictionary!
+        del(__clients)
 
         print("Deleted")
 
