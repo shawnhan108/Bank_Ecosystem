@@ -40,20 +40,45 @@ class IndividualAccount(ClientAccount):
         pass
 
     def __history__(self, date_start="", date_stop=""):
+        """
+        Selects records from SQL table with date filter.
+        :param date_start: string. The start date of the history requested.
+        :param date_stop:  string. The end date of the history requested.
+        :return: Void. displays the account's transaction history within the range of time defined by params
+        """
         pass
 
     def __deposit_track__(self, amount=0.0, source="", date=""):
+        """
+        Selects records from SQL table with type = deposit filter.
+        :param amount: float. The amount of transaction.
+        :param source: string. The source of transaction.
+        :param date: string. The day of transaction.
+        :return: deposit transaction records that satisfy the conditions defined by params.
+        """
         pass
 
     def __withdrawal_track_(self, amount=0.0, source="", date=""):
+        """
+        Selects records from SQL table with type = withdrawal filter
+        :param amount: float. The amount of transaction.
+        :param source: string. The source of transaction.
+        :param date: string. The day of transaction.
+        :return: withdrawal transaction records that satisfy the conditions defined by params.
+        """
         pass
 
     def __most_active__(self, date_start="", date_stop=""):
         pass
     
     def __most_active__type(self, data_start="", date_stop=""):
+        pass
 
     def __avg_trans__(self):
+        """
+        Use SQL function to obtain sum of transaction records and total transaction numbers.
+        :return: Average transaction amount (float) = sum of transaction records/total transaction nums.
+        """
         pass
 
     def __avg_trans_type__(self):
@@ -69,15 +94,31 @@ class IndividualAccount(ClientAccount):
         pass
 
     def __curr_ratio__(self):
+        """
+        Using object 'amount' attribute for total deposit (D).
+        :return: the currency ratio of the client = C/D
+        """
         pass
 
     def __curr_ratio_trend__(self):
+        """
+        SQL function to calculate total deposit on each day.
+        :return: the trend of client's currency ratio stored in a dict, ideally used for graphing (front).
+        """
         pass
 
     def __return_on_eq__(self):
+        """
+        Using object 'amount' attribute for total equity (D).
+        :return: the return on equity of the client = net income/total Equity
+        """
         pass
 
     def __return_on_eq_trend__(self):
+        """
+        SQL function to calculate total equity on each day.
+        :return: The trend of client's return on equity stored in a dict, ideally used for graphing (front).
+        """
         pass
 
     def __data_risk_(self, date_start="", date_stop=""):

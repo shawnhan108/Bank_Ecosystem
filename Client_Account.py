@@ -1,4 +1,4 @@
-coimport mysql.connector
+import mysql.connector
 
 """
 Client Account Class:
