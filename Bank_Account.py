@@ -25,9 +25,8 @@ class BankAccount:
                       bank, client, chequing, savings, or credit account.
         Account Table: A string representing the name of a DB table that stores the account's transaction history.
     """
-    
+
     __clients = dict()
-    
 
     def __init__(self, number=0, name="Bank 1", balance=0.0, account_type=""):
         """
@@ -71,7 +70,6 @@ class BankAccount:
 
         print("Class Successfully Created")
 
-
     def __destory__(self):
         """
         __destroy_(_self): destroys the instance of an entire bank class.
@@ -97,10 +95,9 @@ class BankAccount:
         mycursor.close()
 
         ## Destroy the instance in the dictionary!
-        del(__clients)
+        del (__clients)
 
         print("Deleted")
-
 
     def __print_accounts__(self):
         """

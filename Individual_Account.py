@@ -20,10 +20,10 @@ provides data anlytics for business insights and risk mitigation. These include:
         "Return on Equity" (Trending)
 """
 
-from Client_Account import ClientAccount
+from Bank_Account_Class import DBAccount
 
 
-class IndividualAccount(ClientAccount):
+class IndividualAccount(DBAccount):
     """"
     An ABC indivual account class represents a single client's account. An
     individual client must have the following properties:
