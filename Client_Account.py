@@ -1,4 +1,6 @@
 import mysql.connector
+from Bank_Account import BankAccount
+
 
 """
 Client Account Class:
@@ -10,7 +12,7 @@ managing multiple accounts as a client. These include:
         Withdrawals
 """
 
-from Bank_Account import BankAccount
+
 
 
 class ClientAccount(BankAccount):
@@ -28,7 +30,7 @@ class ClientAccount(BankAccount):
 
     __accounts = dict()
 
-    def __deposit__(self, amount=0.0, source="", date=""):
+    def __deposit__(self, source: str, date: str, amount: float):
         """
         __deposit(self, amount, source, date): consumes an amount, date, deposit
                                                description, updates its
@@ -36,8 +38,7 @@ class ClientAccount(BankAccount):
         Side Effect: Print to I/O (asks for destination)
         Time: O(1)
         """
-        
-        
+
         self.balance += amount
 
         # Connect to mySQL database
@@ -69,11 +70,11 @@ class ClientAccount(BankAccount):
         Side Effects: Print to I/O
         Time: O(1)
         """
-        
-        self.balance -=amount
-        
+
+        self.balance -= amount
+
         # Check Account Balance to Determine if Transaction is Valid
-        if self.balance<0:
+        if self.balance < 0:
             print("Insufficient Funds to Complete Transaction")
             self.balance += amount
 
@@ -93,7 +94,7 @@ class ClientAccount(BankAccount):
         mydb.commit()
 
         mycursor.close()
-        
+
         # Print to I/O
         print("Successful Withdrawal from Account Number {0} on {1}, {2}".format(self.number, date, source))
         print("Account Balance", self.balance)

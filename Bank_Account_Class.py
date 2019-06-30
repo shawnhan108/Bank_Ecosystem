@@ -1,9 +1,11 @@
 import datetime
 import random
 from typing import Optional
+
 import mysql.connector
-from incident_db import IncidentDB
+
 import main
+from incident_db import IncidentDB
 
 
 class BankAccount:
@@ -57,14 +59,39 @@ class DBAccount(BankAccount):
         mydb.commit()
 
         # Generate First History Entry -- Recording Account Creation
-        first_record_command = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Deposits, Balance) VALUES'\
+        first_record_command = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Deposits, Balance) VALUES' \
                                '({1}, {2}, {3}, {4}, {5});'.format(self.acc_table,
                                                                    str(datetime.date.today()),
                                                                    'Account ' + str(self.acc_number) + ' Created',
                                                                    0.00, 0.00, 0.00)
         mycursor.execute(first_record_command)
         mydb.commit()
+        mycursor.close()
 
+    def commit_account_db(self, trans_description: str, withdrawal, deposits):
+        """
+        commit_account_db updates the account's DB with the new transaction information.
+        :param trans_description: str
+        :param withdrawal: float
+        :param deposits: float
+        :return: Updated account's DB with new transaction record
+        Side Effects: Updated the account's DB
+        Time: O(1)
+        COMMENT: commit_account_db must be called after the self.acc_balance field is updated with the new transaction.
+                 commit_account_db should be called with commit_user_db so that both tables are updated.
+        """
+
+        # Connect to mySQL Database
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
+                                       database="Bank_Ecosystem_DB")
+
+        # Generate a transaction record into the userDB table.
+        mycursor = mydb.cursor()
+        record_command = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Deposits, Balance) VALUES ' \
+                         '({1}, {2}, {3}, {4}, {5});'.format(self.acc_table, str(datetime.date.today()),
+                                                             trans_description, withdrawal, deposits, self.acc_balance)
+        mycursor.execute(record_command)
+        mydb.commit()
         mycursor.close()
 
 
@@ -208,6 +235,122 @@ class UserID:
         account_temp = DBAccount.__init__(acc_num)
 
         self.accounts[acc_num] = account_temp
+
+
+class UserDB(UserID):
+
+    def __init__(self):
+        """
+        __init__(self, username): returns a user account with username *username* and a respective MySQL database
+                                  to store transaction history of all user's accounts
+        Side Effects: Create a UserDB Instance
+                      Create a UserID Instance
+                      Prints to I/O
+        Time: O(1)
+        COMMENT: After each transaction, UserDB table should be updated along with the account's DB table.
+        """
+
+        self.user_table = 'UserDB_' + self.username
+
+        # Create a UserID instance
+        UserID.__init__(self)
+
+        # Connect to mySQL Database
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
+                                       database="Bank_Ecosystem_DB")
+
+        # Create New Table in mySQL Database
+        mycursor = mydb.cursor()
+        create_table_command = 'CREATE TABLE {0} (Date varchar(255), Account int, Transaction_Description varchar(255), ' \
+                               'Withdrawals float, Deposits float, Balance float);'.format(self.user_table)
+        mycursor.execute(create_table_command)
+        mydb.commit()
+
+        # Generate First History Entry -- Recording UserDB Creation
+        first_record_command = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Deposits, Balance) VALUES' \
+                               '({1}, {2}, {3}, {4}, {5});'.format(self.user_table, str(datetime.date.today()),
+                                                                   'UserDB ' + self.user_table + ' created',
+                                                                   0.00, 0.00, 0.00)
+        mycursor.execute(first_record_command)
+        mydb.commit()
+
+        mycursor.close()
+
+    def commit_user_db(self, transaction_description: str, account: int, withdrawal: float, deposits: float,
+                       balance: float):
+        """
+        commit_user_db updates the UserDB with the new transaction information.
+        :param transaction_description: str
+        :param account: int
+        :param withdrawal: float
+        :param deposits: float
+        :param balance: account's new balance, float.
+        :return: Updated UserDB with new transaction record
+        Side Effects: Updated the userID instance
+        Time: O(1)
+        COMMENT: commit_user_db should be called with commit_account_db so that both tables are updated.
+        """
+        # Connect to mySQL Database
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
+                                       database="Bank_Ecosystem_DB")
+
+        # Generate a transaction record into the userDB table.
+        mycursor = mydb.cursor()
+        record_command = 'INSERT INTO {0} (Date, Account, Transaction_Description, Withdrawals, Deposits, Balance) ' \
+                         'VALUES ({1}, {2}, {3}, {4}, {5});'.format(self.user_table, str(datetime.date.today()),
+                                                                    account, transaction_description, withdrawal,
+                                                                    deposits, balance)
+        mycursor.execute(record_command)
+        mydb.commit()
+        mycursor.close()
+
+    def __deposit__(self, acc_num: int, source: str, amount: float):
+        """
+        __deposit__: consumes deposit description and amount, and updates its balance,
+                     logs in the account's DB table.
+        :param source: deposit description.
+        :param amount: the amount of transaction.
+        :return: updated account's DB table.
+        Side Effect: Print to I/O (asks for destination)
+        Time: O(1)
+        """
+        target_account = self.accounts[acc_num]
+
+        # update account balance
+        target_account.acc_balance += amount
+
+        # update both account DB and UserDB.
+        target_account.commit_account_db(source, 0.00, amount)
+        self.commit_user_db(source, acc_num, 0.00, amount, target_account.acc_balance)
+
+        print("Successful Deposit to Account Number {0}, {1}".format(target_account.acc_name, source))
+        print("Account Balance", target_account.acc_balance)
+
+    def __withdrawal__(self, acc_num: int, source: str, amount: float):
+        """
+        __withdrawal__: consumes withdrawal description and amount, and updates its balance,
+                        logs in the account's DB table.
+        :param source: withdrawal description.
+        :param amount: the amount of transaction.
+        :return: updated account's DB table.
+        Side Effect: Print to I/O (asks for destination)
+        Time: O(1)
+        """
+        target_account = self.accounts[acc_num]
+
+        # update account balance, checks if account balance to determine if transaction is valid.
+        target_account.acc_balance -= amount
+        if target_account.acc_balance < 0.00:
+            print("Insufficient Funds to Complete Transaction")
+            target_account.acc_balance += amount
+            return
+
+        # update both account DB and UserDB.
+        target_account.commit_account_db(source, amount, 0.00)
+        self.commit_user_db(source, acc_num, amount, 0.00, target_account.acc_balance)
+
+        print("Successful Withdrawal to Account Number {0}, {1}".format(target_account.acc_name, source))
+        print("Account Balance", target_account.acc_balance)
 
     def __print_User_Details__(self):
         """
