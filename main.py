@@ -1,15 +1,8 @@
-import mysql.connector
+from incident_db import IncidentDB
 
-mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    passwd="anshulshawn",
-    database="mydb"
-)
 
-mycursor = mydb.cursor()
+class Load:
+    incident_db = IncidentDB()
 
-mycursor.execute("show tables")
 
-for tb in mycursor:
-    print(tb)
+Load()

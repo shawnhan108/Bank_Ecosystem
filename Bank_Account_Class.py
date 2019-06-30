@@ -2,6 +2,8 @@ import datetime
 import random
 from typing import Optional
 import mysql.connector
+from incident_db import IncidentDB
+import main
 
 
 class BankAccount:
@@ -55,7 +57,7 @@ class DBAccount(BankAccount):
         mydb.commit()
 
         # Generate First History Entry -- Recording Account Creation
-        first_record_command = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Deposits, Balance) VALUES' \
+        first_record_command = 'INSERT INTO {0} (Date, Transaction_Description, Withdrawals, Deposits, Balance) VALUES'\
                                '({1}, {2}, {3}, {4}, {5});'.format(self.acc_table,
                                                                    str(datetime.date.today()),
                                                                    'Account ' + str(self.acc_number) + ' Created',
@@ -91,7 +93,8 @@ class UserID:
             print("Please enter your correct age.")
             self.age = int(input("Age: "))
 
-            # TODO Record "incidents" -- user too young -- in a database
+            IncidentDB.commit_incident(main.Load.incident_db, self.name, self.username,
+                                       'Unqualified User Account registration due to age out of range.')
         if self.age < 18:
             print("User is too young.")
             age = input("Age: ")
