@@ -2,6 +2,7 @@ import datetime
 import mysql.connector
 from typing import Optional
 from Bank_Account_Class import UserID, DBAccount
+import main
 
 
 class IncidentDB:
@@ -342,6 +343,55 @@ class UsersDB:
         # delete key from the dictionary as well
         del self.users_dict[username]
 
+    def update_username(self, old_username: str, new_username: str):
+        """
+        Updates incident_db, Users_db, accounts_db and their corresponding dict/RAM instances.
+        :param old_username: original username
+        :param new_username: new username
+        :return: Updated dbs.
+        Time: O(n) where n = max(incident_db, Users_db, accounts_db)
+        COMMENT: a very expensive function.
+        """
+        #  First connect to DB
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
+                                       database="Bank_Ecosystem_DB")
+        mycursor = mydb.cursor()
+
+        #  Update incident_db
+        update_command = "UPDATE incident_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
+                                                                                                   old_username)
+        mycursor.execute(update_command)
+        mydb.commit()
+
+        #  Update Users_db
+        update_command = "UPDATE users_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
+                                                                                                old_username)
+        mycursor.execute(update_command)
+        mydb.commit()
+
+        #  Update accounts_db
+        update_command = "UPDATE accounts_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
+                                                                                                   old_username)
+        mycursor.execute(update_command)
+        mydb.commit()
+        mycursor.close()
+
+        #  Update incident_dict
+        for key, content in main.app.incident_db.incident_dict.items():
+            if content[2] == old_username:
+                main.app.incident_db.incident_dict[key] = content[:2] + (new_username,) + content[3:]
+
+        #  Update users_dict
+        for key, content in self.users_dict.items():
+            if key == old_username:
+                self.users_dict[new_username] = content
+                del self.users_dict[old_username]
+
+        #  Update accounts_dict
+        for key, content in main.app.accounts_db.accounts_dict.items():
+            if content[0] == old_username:
+                main.app.accounts_db.accounts_dict[key] = (new_username,) + content[1:]
+
     def update_user(self, username: str, name: Optional[str] = None, age: Optional[int] = None,
                     password: Optional[str] = None):
         """
@@ -351,7 +401,7 @@ class UsersDB:
         :param age: Updated User's age
         :param password: Updated password
         :return: Updated users_table and users dict.
-        Time: O(1)
+        Time: O(n), where n is the size of users_table
         Category: DB function
         """
         # Connect to mySQL Database
