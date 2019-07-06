@@ -173,6 +173,9 @@ class App:
             str(datetime.date.today()), 'UserDB ' + user.user_table + ' created', 0.00, 0.00, 0.00)
         self.trans_num += 1
 
+        # Update all db tables and dictionaries with new user info
+        self.users_db.add_user(user.name, user.age, user.username, user.password)
+
         print("Successful UserID Created.")  # Notify User of Successful UserID Creation
 
     def __username_setup__(self, user: UserDB):
