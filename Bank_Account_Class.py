@@ -67,7 +67,7 @@ class BankAccount:
 
 class DBAccount(BankAccount):
 
-    def __init__(self, transaction_num: Optional[int] = None, new_account: Optional[bool] = False, acc_number: int = 0):
+    def __init__(self, new_account: Optional[bool] = False, acc_number: int = 0):
         """
         __init__(self, acc_num): returns a new,basic account object with account number *acc_num* and a respective MySQL
                                  database to store transaction history.
@@ -76,7 +76,6 @@ class DBAccount(BankAccount):
                       Prints to I/O
         Time: O(1)
         :param acc_number: Account Number, int.
-        :param transaction_num: the newest transaction number.
         :param new_account: boolean -- if the account represented by acc_number is a new account.
         COMMENT: since new DB table only needs to be generated for new accounts, we have to specify if the function is
                  applied to new account.
@@ -102,16 +101,18 @@ class DBAccount(BankAccount):
             # Generate First History Entry -- Recording Account Creation
             first_record_command = 'INSERT INTO {0} (Transaction_Num, Date, Transaction_Description, Withdrawals, ' \
                                    'Deposits, Balance) VALUES ({1}, {2}, {3}, {4}, {5}, {6});'.format(
-                self.acc_table, transaction_num, str(datetime.date.today()),
+                self.acc_table, main.app.trans_num, str(datetime.date.today()),
                 'Account ' + str(self.acc_number) + ' Created', 0.00, 0.00, 0.00)
             mycursor.execute(first_record_command)
             mydb.commit()
             mycursor.close()
 
             # Update account dictionary attribute as well
-            self.acc_dict[transaction_num] = (
+            self.acc_dict[main.app.trans_num] = (
                 str(datetime.date.today()), 'Account ' + str(self.acc_number) + ' Created',
                 0.00, 0.00, 0.00)
+
+            main.app.trans_num += 1
 
         else:
             # Create a Bank Account Instance
@@ -138,7 +139,7 @@ class DBAccount(BankAccount):
         self.accounts_dict = temp_dict
         mycursor.close()
 
-    def commit_account_db(self, transaction_num: int, trans_description: str, withdrawal: float, deposits: float):
+    def commit_account_db(self, trans_description: str, withdrawal: float, deposits: float):
         """
         commit_account_db updates the account's DB with the new transaction information.
         :param trans_description: str
@@ -158,7 +159,7 @@ class DBAccount(BankAccount):
         # Generate a transaction record into the userDB table.
         mycursor = mydb.cursor()
         record_command = 'INSERT INTO {0} (Transaction_Num, Date, Transaction_Description, Withdrawals, Deposits, ' \
-                         'Balance) VALUES ({1}, {2}, {3}, {4}, {5}, {6});'.format(self.acc_table, transaction_num,
+                         'Balance) VALUES ({1}, {2}, {3}, {4}, {5}, {6});'.format(self.acc_table, main.app.trans_num,
                                                                                   str(datetime.date.today()),
                                                                                   trans_description, withdrawal,
                                                                                   deposits, self.acc_balance)
@@ -167,8 +168,10 @@ class DBAccount(BankAccount):
         mycursor.close()
 
         # Update account dictionary attribute as well
-        self.acc_dict[transaction_num] = (str(datetime.date.today()), trans_description, withdrawal, deposits,
-                                          self.acc_balance)
+        self.acc_dict[main.app.trans_num] = (str(datetime.date.today()), trans_description, withdrawal, deposits,
+                                             self.acc_balance)
+
+        # will not update main.app.trans_num here. It will be updated in commit_user_db function.
 
 
 class UserID:
@@ -300,7 +303,7 @@ class UserID:
 
 class UserDB(UserID):
 
-    def __init__(self, transaction_num: Optional[int] = None, new_user: Optional[bool] = False):
+    def __init__(self, new_user: Optional[bool] = False):
         """
         __init__(self, username): returns a user account with username *username* and a respective MySQL database
                                   to store transaction history of all user's accounts
@@ -331,15 +334,16 @@ class UserDB(UserID):
             # Generate First History Entry -- Recording UserDB Creation
             first_record_command = 'INSERT INTO {0} (Transaction_Num, Date, Transaction_Description, Withdrawals,' \
                                    ' Deposits, Balance) VALUES ({1}, {2}, {3}, {4}, {5}, {6});'.format(
-                self.user_table, transaction_num, str(datetime.date.today()), 'UserDB ' + self.user_table + ' created',
-                0.00, 0.00, 0.00)
+                self.user_table, main.app.trans_num, str(datetime.date.today()),
+                'UserDB ' + self.user_table + ' created', 0.00, 0.00, 0.00)
             mycursor.execute(first_record_command)
             mydb.commit()
             mycursor.close()
 
             # Update user dictionary attribute
-            self.trans_dict[transaction_num] = (
+            self.trans_dict[main.app.trans_num] = (
                 str(datetime.date.today()), 'UserDB ' + self.user_table + ' created', 0.00, 0.00, 0.00)
+            main.app.trans_num += 1
 
         else:
             # Create a UserID instance
@@ -381,7 +385,7 @@ class UserDB(UserID):
         self.accounts = temp_accounts_dict
 
     def commit_user_db(self, transaction_description: str, account_num: int, withdrawal: float, deposits: float,
-                       balance: float, transaction_num: int):
+                       balance: float):
         """
         commit_user_db updates the UserDB with the new transaction information.
         :param transaction_description: str
@@ -389,7 +393,6 @@ class UserDB(UserID):
         :param withdrawal: float
         :param deposits: float
         :param balance: account's new balance, float.
-        :param transaction_num: newest transaction number
         :return: Updated UserDB with new transaction record
         Side Effects: Updated the userID instance
         Time: O(1)
@@ -403,15 +406,16 @@ class UserDB(UserID):
         mycursor = mydb.cursor()
         record_command = 'INSERT INTO {0} (Transaction_Num, Date, Account, Transaction_Description, Withdrawals, ' \
                          'Deposits, Balance) VALUES ({1}, {2}, {3}, {4}, {5}, {6}, {7});'.format(
-            self.user_table, transaction_num, str(datetime.date.today()), account_num, transaction_description,
+            self.user_table, main.app.trans_num, str(datetime.date.today()), account_num, transaction_description,
             withdrawal, deposits, balance)
         mycursor.execute(record_command)
         mydb.commit()
         mycursor.close()
 
         # Update trans_dict attribute as well
-        self.trans_dict[transaction_num] = (str(datetime.date.today()), transaction_description, withdrawal, deposits,
-                                            balance)
+        self.trans_dict[main.app.trans_num] = (str(datetime.date.today()), transaction_description, withdrawal,
+                                               deposits, balance)
+        main.app.trans_num += 1
 
     def __change_password__(self):
         """
@@ -469,7 +473,7 @@ class UserDB(UserID):
         mydb.commit()
         mycursor.close()
 
-    def __add_account__(self, transaction_num):
+    def __add_account__(self):
         """
         __add_account__(self): creates a new bank account instance and assigns ownership to the User ID
         Side Effect: Mutates UserID
@@ -486,13 +490,13 @@ class UserDB(UserID):
         while acc_num in self.accounts:
             acc_num = random.randint(100000, 999999)
 
-        account_temp = DBAccount(transaction_num=transaction_num, new_account=True, acc_number=acc_num)
+        account_temp = DBAccount(new_account=True, acc_number=acc_num)
 
         # Update dictionaries and DBs
         self.accounts[acc_num] = account_temp
         main.app.accounts_db.add_account(account_temp, self.username)
 
-    def __deposit__(self, transaction_num: int, acc_num: int, source: str, amount: float):
+    def __deposit__(self, acc_num: int, source: str, amount: float):
         """
         __deposit__: consumes deposit description and amount, and updates its balance,
                      logs in the account's DB table.
@@ -508,13 +512,13 @@ class UserDB(UserID):
         target_account.acc_balance += amount
 
         # update both account DBs and dictionaries.
-        target_account.commit_account_db(transaction_num, source, 0.00, amount)
-        self.commit_user_db(source, acc_num, 0.00, amount, target_account.acc_balance, transaction_num)
+        target_account.commit_account_db(source, 0.00, amount)
+        self.commit_user_db(source, acc_num, 0.00, amount, target_account.acc_balance)
 
         print("Successful Deposit to Account Number {0}, {1}".format(target_account.acc_name, source))
         print("Account Balance", target_account.acc_balance)
 
-    def __withdrawal__(self, transaction_num: int, acc_num: int, source: str, amount: float):
+    def __withdrawal__(self, acc_num: int, source: str, amount: float):
         """
         __withdrawal__: consumes withdrawal description and amount, and updates its balance,
                         logs in the account's DB table.
@@ -534,8 +538,8 @@ class UserDB(UserID):
             return
 
         # update both account DB and UserDB.
-        target_account.commit_account_db(transaction_num, source, amount, 0.00)
-        self.commit_user_db(source, acc_num, amount, 0.00, target_account.acc_balance,transaction_num)
+        target_account.commit_account_db(source, amount, 0.00)
+        self.commit_user_db(source, acc_num, amount, 0.00, target_account.acc_balance)
 
         print("Successful Withdrawal to Account Number {0}, {1}".format(target_account.acc_name, source))
         print("Account Balance", target_account.acc_balance)
