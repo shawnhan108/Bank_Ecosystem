@@ -1,8 +1,6 @@
 import datetime
 import mysql.connector
 from typing import Optional
-from Bank_Account_Class import UserID, DBAccount
-import main
 
 
 class IncidentDB:
@@ -232,6 +230,32 @@ class IncidentDB:
 
         mycursor.close()
 
+    def update_username(self, old_username: str, new_username: str):
+        """
+        Updates incident_db and its corresponding dict/RAM instances.
+        :param old_username: original username
+        :param new_username: new username
+        :return: Updated dbs.
+        Time: O(n) where n = size of incident_db
+        COMMENT: expensive DB function.
+        """
+        #  First connect to DB
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
+                                       database="Bank_Ecosystem_DB")
+        mycursor = mydb.cursor()
+
+        #  Update incident_db
+        update_command = "UPDATE incident_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
+                                                                                                   old_username)
+        mycursor.execute(update_command)
+        mydb.commit()
+        mycursor.close()
+
+        #  Update incident_dict
+        for key, content in self.incident_dict.items():
+            if content[2] == old_username:
+                self.incident_dict[key] = content[:2] + (new_username,) + content[3:]
+
 
 class UsersDB:
     def __init__(self):
@@ -294,15 +318,19 @@ class UsersDB:
 
         print('New users_table successfully created.')
 
-    def add_user(self, userid_obj: UserID):
+    def add_user(self, name: str, age: int, username: str, password: str):
         """
-        add_account: creates a record in users_table that records the new registered user.
+        add_user: creates a record in users_table that records the new registered user.
                      add a key-content in accounts dict that records the new user.
-        :param userid_obj: a UserID object representing the new user
+        :param name: name of user
+        :param age: age of user
+        :param username: username of user
+        :param password: password of user
         :return: an updated users_table with updated users dict
         Side Effects: Update users table; update users dict
         Time: O(1)
         Category: DB Function
+        COMMENT: cannot pass in a UserID object because of circular import.
         """
         # Connect to mySQL Database
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
@@ -311,14 +339,14 @@ class UsersDB:
         # Generate the new user record into users_table
         mycursor = mydb.cursor()
         commit_command = 'INSERT INTO {0} (Name, Age, Username, Password) VALUES ({1}, {2}, {3}, {4});'.format(
-            'users_table', userid_obj.name, userid_obj.age, userid_obj.username, userid_obj.password)
+            'users_table', name, age, username, password)
         mycursor.execute(commit_command)
         mydb.commit()
 
         mycursor.close()
 
         # add key to dictionary
-        self.users_dict[userid_obj.username] = (userid_obj.name, userid_obj.age, userid_obj.password)
+        self.users_dict[username] = (name, age, password)
 
     def delete_user(self, username: int):
         """
@@ -345,52 +373,30 @@ class UsersDB:
 
     def update_username(self, old_username: str, new_username: str):
         """
-        Updates incident_db, Users_db, accounts_db and their corresponding dict/RAM instances.
+        Updates Users_db and its corresponding dict/RAM instances.
         :param old_username: original username
         :param new_username: new username
         :return: Updated dbs.
-        Time: O(n) where n = max(incident_db, Users_db, accounts_db)
-        COMMENT: a very expensive function.
+        Time: O(n) where n = size of Users_db
+        COMMENT: expensive DB function.
         """
         #  First connect to DB
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
                                        database="Bank_Ecosystem_DB")
         mycursor = mydb.cursor()
 
-        #  Update incident_db
-        update_command = "UPDATE incident_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
-                                                                                                   old_username)
-        mycursor.execute(update_command)
-        mydb.commit()
-
         #  Update Users_db
         update_command = "UPDATE users_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
                                                                                                 old_username)
         mycursor.execute(update_command)
         mydb.commit()
-
-        #  Update accounts_db
-        update_command = "UPDATE accounts_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
-                                                                                                   old_username)
-        mycursor.execute(update_command)
-        mydb.commit()
         mycursor.close()
-
-        #  Update incident_dict
-        for key, content in main.app.incident_db.incident_dict.items():
-            if content[2] == old_username:
-                main.app.incident_db.incident_dict[key] = content[:2] + (new_username,) + content[3:]
 
         #  Update users_dict
         for key, content in self.users_dict.items():
             if key == old_username:
                 self.users_dict[new_username] = content
                 del self.users_dict[old_username]
-
-        #  Update accounts_dict
-        for key, content in main.app.accounts_db.accounts_dict.items():
-            if content[0] == old_username:
-                main.app.accounts_db.accounts_dict[key] = (new_username,) + content[1:]
 
     def update_user(self, username: str, name: Optional[str] = None, age: Optional[int] = None,
                     password: Optional[str] = None):
@@ -513,15 +519,20 @@ class AccountsDB:
 
         print('New accounts_table successfully created.')
 
-    def add_account(self, dbacc_obj: DBAccount, username: str):
+    def add_account(self, acc_number: int, acc_name: str, acc_balance: float, acc_type: str, username: str):
         """
         add_account: creates a record in accounts_table that records the new registered account.
                      add a key-content in accounts dict that records the new account.
-        :param dbacc_obj: a DBAccount object representing the account
+        :param acc_number: account number
+        :param acc_name: account name
+        :param acc_balance: account balance
+        :param acc_type: account type
+        :param username: username of account holder
         :return: an updated accounts_table with updated accounts dict
         Side Effects: Update accounts_table; update accounts dict
         Time: O(1)
         Category: DB Function
+        COMMENT: cannot pass in a DBAccount object because of circular import.
         """
         # Connect to mySQL Database
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
@@ -530,16 +541,14 @@ class AccountsDB:
         # Generate the new account record into accounts_table
         mycursor = mydb.cursor()
         commit_command = 'INSERT INTO {0} (Account_num, Username, Account_name, Account_bal, Account_type) VALUES ' \
-                         '({1}, {2}, {3}, {4}, {5});'.format('accounts_table', dbacc_obj.acc_number, username,
-                                                             dbacc_obj.acc_name, dbacc_obj.acc_balance,
-                                                             dbacc_obj.acc_type)
+                         '({1}, {2}, {3}, {4}, {5});'.format('accounts_table', acc_number, username,
+                                                             acc_name, acc_balance, acc_type)
         mycursor.execute(commit_command)
         mydb.commit()
         mycursor.close()
 
         # add key to dictionary
-        self.accounts_dict[dbacc_obj.acc_number] = (username, dbacc_obj.acc_name, dbacc_obj.acc_balance,
-                                                    dbacc_obj.acc_type)
+        self.accounts_dict[acc_number] = (username, acc_name, acc_balance, acc_type)
 
     def delete_account(self, account_number: int):
         """
@@ -627,3 +636,29 @@ class AccountsDB:
             self.accounts_dict[account_number] = original_record[:3] + (account_type,)
 
         mycursor.close()
+
+    def update_username(self, old_username: str, new_username: str):
+        """
+        Updates accounts_db and its corresponding dict/RAM instances.
+        :param old_username: original username
+        :param new_username: new username
+        :return: Updated dbs.
+        Time: O(n) where n = size of accounts_db
+        COMMENT: expensive DB function.
+        """
+        #  First connect to DB
+        mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
+                                       database="Bank_Ecosystem_DB")
+        mycursor = mydb.cursor()
+
+        #  Update accounts_db
+        update_command = "UPDATE accounts_table SET Username = '{0}' WHERE Username = {1};".format(new_username,
+                                                                                                   old_username)
+        mycursor.execute(update_command)
+        mydb.commit()
+        mycursor.close()
+
+        #  Update accounts_dict
+        for key, content in self.accounts_dict.items():
+            if content[0] == old_username:
+                self.accounts_dict[key] = (new_username,) + content[1:]
