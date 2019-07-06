@@ -139,7 +139,7 @@ class App:
             age = input("Age: ")
 
         user.age = int(age)
-        user.username = str(input("Please enter your username: "))  # Request Username
+        self.__username_setup__(user)  # Request Username and verifies its validity
         user.password = '000000'  # initialize temporary password
         user.user_table = 'UserDB_' + user.username
         user.trans_dict = dict()
@@ -175,6 +175,21 @@ class App:
 
         print("Successful UserID Created.")  # Notify User of Successful UserID Creation
 
+    def __username_setup__(self, user: UserDB):
+        """
+        __username_setup__ requests user's username from I/O stream, verifies its validity, and stores it to the field.
+        :param user: the UserDB object to have its username set up
+        Side Effect: Mutate UserDB
+        Time: O(1)
+        """
+        valid = False
+        while not valid:
+            user.username = input('Please enter your username')
+            if user.username in self.users_db.users_dict.keys():
+                print('The username you have entered is taken.')
+            else:
+                valid = True
+
     def __add_account__(self, user: UserDB):
         """
         __add_account__(self): creates a new bank account instance and assigns ownership to the User ID
@@ -189,7 +204,7 @@ class App:
 
         acc_num = random.randint(100000, 999999)
 
-        while acc_num in user.accounts:
+        while acc_num in self.accounts_db.accounts_dict.keys():
             acc_num = random.randint(100000, 999999)
 
         account_temp = DBAccount(transaction_num=self.trans_num, new_account=True, acc_number=acc_num)
@@ -213,7 +228,7 @@ class App:
         """
         old_username = user.username
         old_tablename = user.user_table
-        user.username = input("Please enter your username: ")  # Request User for Username
+        self.__username_setup__(user)  # Request User for Username
         user.user_table = 'UserDB_' + user.username
 
         # Commit changes in DB and dicts

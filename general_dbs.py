@@ -468,11 +468,6 @@ class AccountsDB:
         mydb = mysql.connector.connect(host="localhost", user="root", passwd="anshulshawn",
                                        database="Bank_Ecosystem_DB")
 
-        # to get the next account_num to be used
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT MAX(Account_num) FROM accounts_table;")
-        self.account_num = mycursor.fetchone()[0] + 1
-
         # retrieve data from accounts_table and store in dictionary.
         out_dict = dict()
         mycursor = mydb.cursor()
@@ -514,7 +509,6 @@ class AccountsDB:
         mydb.commit()
         mycursor.close()
 
-        self.account_num = 1
         self.accounts_dict = dict()
 
         print('New accounts_table successfully created.')
