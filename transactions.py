@@ -12,6 +12,8 @@ class Transactions(App):
         :param amount: amount to be deposited
         """
         self.accounts_users_dict[username].__deposit__(self.trans_num, acc_num, source, amount)
+        self.accounts_db.update_account(account_number=acc_num,
+                                        account_bal=self.accounts_users_dict[username].accounts[acc_num].acc_balance)
         self.trans_num += 1
 
     def __withdrawal__(self, username: str, acc_num: int, source: str, amount: float):
@@ -23,6 +25,8 @@ class Transactions(App):
         :param amount: amount to be withdrawn
         """
         self.accounts_users_dict[username].__withdrawal__(self.trans_num, acc_num, source, amount)
+        self.accounts_db.update_account(account_number=acc_num,
+                                        account_bal=self.accounts_users_dict[username].accounts[acc_num].acc_balance)
         self.trans_num += 1
 
     #  TODO: all types of transaction functions

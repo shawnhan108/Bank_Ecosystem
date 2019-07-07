@@ -298,7 +298,7 @@ class UserDB(UserID):
         # update account balance
         target_account.acc_balance += amount
 
-        # update both account DBs and dictionaries.
+        # update account DBs and dictionaries.
         target_account.commit_account_db(transaction_num, source, 0.00, amount)
         self.commit_user_db(transaction_num, source, acc_num, 0.00, amount, target_account.acc_balance)
 

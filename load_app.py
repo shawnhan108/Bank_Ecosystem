@@ -1,5 +1,6 @@
 import datetime
 import random
+from typing import Optional
 
 import mysql.connector
 
@@ -114,7 +115,7 @@ class App:
                 temp_accounts_dict[key] = temp_account
         user.accounts = temp_accounts_dict
 
-    def __create_new_user__(self, user: UserDB):
+    def __create_new_user__(self):
         """
         __create_new_user__(self): return a User ID, DB and Bank Account with username and password credentials
                                    along with other account details by requesting user info from I/O stream.
@@ -124,6 +125,7 @@ class App:
                      Prints to I/O
         Time: O(n * m), where n is the length of the password and m is the number of attempts to setup a password.
         """
+        user = UserDB()
         user.name = str(input("Name: "))  # Initialize User ID Name
         user.accounts = dict()  # Store Accounts for User ID
 
@@ -175,6 +177,7 @@ class App:
 
         # Update all db tables and dictionaries with new user info
         self.users_db.add_user(user.name, user.age, user.username, user.password)
+        self.accounts_users_dict[user.username] = user
 
         print("Successful UserID Created.")  # Notify User of Successful UserID Creation
 
@@ -276,3 +279,48 @@ class App:
 
         # Commit changes in DB and dicts
         self.users_db.update_user(username=user.username, password=user.password)
+
+    def __update_account__(self, acc_num: int, acc_name: Optional[str] = None, acc_bal: Optional[float] = None,
+                           acc_type: Optional[str] = None):
+        """
+        __update_account__ updates an account's info by finding the account object, and updating fields, tables, and DBs
+        :param acc_num: Mandatory: account number
+        :param acc_name: account name
+        :param acc_bal: account balance
+        :param acc_type: account type
+        :return: Updated account object, dbs and dicts
+        COMMENT: Username of account holder will not be updated in this function. If change of username occurs, it will
+                 be handled by __change_username__ instead.
+        """
+        username = self.accounts_db.accounts_dict[acc_num][0]
+        if acc_name:
+            self.accounts_db.update_account(acc_num, account_name=acc_name)
+            self.accounts_users_dict[username].accounts[acc_num].acc_name = acc_name
+        if acc_bal:
+            self.accounts_db.update_account(acc_num, account_bal=acc_bal)
+            self.accounts_users_dict[username].accounts[acc_num].acc_balance = acc_bal
+        if acc_type:
+            self.accounts_db.update_account(acc_num, account_type=acc_type)
+            self.accounts_users_dict[username].accounts[acc_num].acc_type = acc_type
+
+    def __update_user__(self, username: str, name: Optional[str] = None, age: Optional[int] = None,
+                        password: Optional[str] = None):
+        """
+        __update_user__ updates a user's info by finding the user object, and updating fields, tables, and DBs
+        :param username: Mandatory: username of the user
+        :param name: User's name
+        :param age: User's age
+        :param password: UserID password
+        :return: Updated User object, DBs and dicts
+        COMMENT: Username will not be updated in this function. If change of username occurs, it will
+                 be handled by __change_username__ instead.
+        """
+        if name:
+            self.users_db.update_user(username, name=name)
+            self.accounts_users_dict[username].name = name
+        if age:
+            self.users_db.update_user(username, age=age)
+            self.accounts_users_dict[username].age = age
+        if password:
+            self.users_db.update_user(username, password=password)
+            self.accounts_users_dict[username].password = password
