@@ -1,6 +1,6 @@
 # Bank_Ecosystem
 
-This is a experimental project where we created a bank ecosystem focused around three primary functions:
+This is an experimental project where we created a bank ecosystem focused around three primary functions:
   1) Ease of Use;
   2) Optimized Performance; and
   3) Data Analytics.
